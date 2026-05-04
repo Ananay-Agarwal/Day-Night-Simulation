@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Day‑Night Cycle Lighting Simulation | Real‑Time Ray Tracer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #fefefa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            line-height: 1.55;
+            color: #1e2a3a;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.1);
+            padding: 2rem 2.2rem;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1a2a3a, #2c4c6c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.5rem;
+        }
+
+        .subhead {
+            font-size: 1.2rem;
+            color: #4a627a;
+            border-left: 4px solid #f5a623;
+            padding-left: 1rem;
+            margin: 0.5rem 0 1.8rem 0;
+            font-weight: 400;
+        }
+
+        h2 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            margin-top: 2.2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid #e2e8f0;
+            color: #0f2b3d;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem 0;
+            color: #1f4e6e;
+        }
+
+        h4 {
+            font-weight: 600;
+            font-size: 1.15rem;
+            margin: 1.2rem 0 0.4rem 0;
+            color: #2c5a7a;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        ul, ol {
+            margin: 0.75rem 0 1rem 1.8rem;
+        }
+
+        li {
+            margin: 0.35rem 0;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #eef2f6;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #2c5a7a;
+            margin-right: 0.5rem;
+        }
+
+        .highlight {
+            background: #fef5e7;
+            border-left: 4px solid #f5a623;
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            margin: 1.2rem 0;
+        }
+
+        .grid-2 {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 1.2rem 1.5rem;
+            flex: 1;
+            min-width: 220px;
+            border: 1px solid #e9edf2;
+        }
+
+        .card strong {
+            color: #1f4e6e;
+        }
+
+        code {
+            background: #eef2f6;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background: #1e2a3a;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 16px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+        }
+
+        .demo-btn {
+            display: inline-block;
+            background: #1e3a5f;
+            color: white;
+            font-weight: 600;
+            padding: 0.9rem 2rem;
+            border-radius: 60px;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .demo-btn:hover {
+            background: #0f2b3d;
+            transform: translateY(-1px);
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #6883a0;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1.8rem;
+        }
+
+        @media (max-width: 720px) {
+            .container {
+                padding: 1.2rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.6rem;
+            }
+        }
+
+        .img-placeholder {
+            background: #eef2f6;
+            border-radius: 20px;
+            padding: 1rem;
+            text-align: center;
+            margin: 1rem 0;
+            color: #4a627a;
+            font-style: italic;
+            border: 1px dashed #b9cadb;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Day‑Night Cycle<br>Lighting Simulation</h1>
+    <div class="subhead">Real‑time global illumination in a custom Taichi ray tracer | >90 FPS (RTX 4060)</div>
+
+    <!-- Interactive demo placeholder / link -->
+    <div style="text-align: center; margin: 1rem 0 2rem 0;">
+        <a href="#" class="demo-btn" id="demoLink">🎮 Launch Interactive Demo (WebGPU build)</a>
+        <p style="font-size: 0.85rem; margin-top: 8px;">⚠️ Full demo requires WebGPU – <em>coming soon / live version below</em></p>
+    </div>
+
+    <!-- ========== INTRODUCTION ========== -->
+    <h2>Introduction</h2>
+    <p>The goal was to implement a <strong>real‑time day‑night lighting simulation</strong> inside a custom ray tracer, without relying on a pre‑built game engine. Key objectives:</p>
+    <ul>
+        <li>Dynamically change <strong>sky color, light color, and light intensity</strong> based on the sun’s elevation.</li>
+        <li>Smooth transition: sunrise → day → sunset → night with realistic hues (blue sky, orange/red twilight, dark night).</li>
+        <li>Add <strong>sun and moon spheres</strong> as visual references.</li>
+        <li>Ensure shadows and reflections respond correctly to the changing light.</li>
+        <li>Provide an interactive <strong>pause feature</strong> to freeze the cycle for inspection.</li>
+    </ul>
+    <p>The final deliverable is a live, GPU‑accelerated ray tracer written with <strong>Taichi</strong>, where the user can orbit the camera and watch a full day‑night cycle in real time (<strong>>90 FPS on an RTX 4060</strong>).</p>
+
+    <!-- ========== ARCHITECTURE ========== -->
+    <h2>Architecture</h2>
+    <p>The project built upon an existing real‑time path tracer (diffuse, mirror, dielectric, emissive materials) and added a time‑of‑day system without breaking performance or material logic.</p>
+
+    <h3>Core decisions</h3>
+    <ul>
+        <li><strong>No spectral ray tracing</strong> – Instead of expensive wavelength‑dependent rendering, a physically plausible color mixing approach based on sun elevation keeps the ray tracer real‑time (≥90 fps on RTX 4060).</li>
+        <li><strong>Dynamic light source</strong> – The main directional light (sun/moon) moves on an elliptical orbit around the scene center. Its position determines the <em>elevation angle</em>, which controls light color (warm/cool), intensity, and sky gradient.</li>
+        <li><strong>Separate visual sun/moon spheres</strong> – Two spheres with an <code>EMISSIVE</code> material are placed far away (20 units) in the light direction and opposite. Radii set to zero when not visible.</li>
+        <li><strong>Pause mechanism</strong> – Spacebar toggle freezes the time variable <code>t</code> (sun angle, light color, sky) while camera movement continues, allowing detailed inspection.</li>
+    </ul>
+
+    <div class="highlight">
+        <strong>Performance considerations</strong><br>
+        • All heavy computations (ray marching, shading, shadow rays) run on GPU via Taichi kernels.<br>
+        • Day‑night logic runs on CPU per frame (negligible overhead).<br>
+        • Only two extra spheres (sun/moon) → minimal increase in ray tracing cost.
+    </div>
+
+    <!-- ========== SYSTEM ========== -->
+    <h2>System</h2>
+
+    <h3>1. Complete ray tracer core</h3>
+    <p>The ray tracer implements a <strong>recursive path tracer</strong> with the following components:</p>
+    <div class="grid-2">
+        <div class="card"><strong>Materials</strong><br>• Diffuse (Lambertian)<br>• Mirror (perfect specular)<br>• Dielectric (Fresnel + refraction)<br>• Emissive (sun/moon glow)</div>
+        <div class="card"><strong>Intersection</strong><br>• Sphere / infinite ground plane<br>• World traversal (closest hit)</div>
+        <div class="card"><strong>Shading & lighting</strong><br>• Shadow rays with attenuation for transparent/mirror occluders (Beer‑Lambert)<br>• Ambient term + specular highlight</div>
+        <div class="card"><strong>Recursive tracing</strong><br>• Max depth 15<br>• Diffuse + direct lighting + random bounce<br>• Mirror/dielectric Fresnel & throughput</div>
+    </div>
+
+    <h3>2. Time‑of‑day system (scene_2.py)</h3>
+    <ul>
+        <li><strong>Sun/Moon orbit</strong> – <code>t</code> increments by 0.005 per frame → full cycle ≈21 seconds. Sun position follows an ellipse: <code>light_x = cos(angle)*radius</code>, <code>light_y = sin(angle)*y_amp</code>.</li>
+        <li><strong>Elevation & day factor</strong> – <code>elevation = sun_dir.y</code>, <code>day_factor = smoothstep(-0.15, 0.25, elevation)</code> (0 = night, 1 = full day).</li>
+        <li><strong>Light color mixing</strong> – Sun: <code>(1.0,0.95,0.85)×1.2</code>; Moon: <code>(0.65,0.75,1.0)×0.8</code>; Sunset: <code>(1.0,0.5,0.2)×5.0</code>. Blended with elevation‑based sunset tint.</li>
+        <li><strong>Ambient</strong> – Day <code>(0.15,0.15,0.20)</code>, night <code>(0.02,0.03,0.05)</code>, mixed by <code>day_factor</code>.</li>
+        <li><strong>Dynamic sky gradient</strong> – In the miss shader: top/bottom colors interpolate between night & day variants; orange tint added near sunrise/sunset.</li>
+        <li><strong>Sun/Moon spheres (visual only)</strong> – Distance 20 units; radius 0.8 (sun when visible) / 0.7 (moon). Emissive color added directly.</li>
+        <li><strong>Pause</strong> – <code>window.get_key(ti.ui.SPACE)</code> toggles time freezing, camera remains active.</li>
+    </ul>
+
+    <h3>3. Performance</h3>
+    <p><strong>>90 FPS on RTX 4060</strong> at 800×600 resolution, 15 bounces. Taichi’s CUDA backend compiles kernels to efficient GPU code. No visible lag during day‑night transitions.</p>
+
+    <!-- ========== RESULTS ========== -->
+    <h2>📸 Results</h2>
+
+    <div class="img-placeholder">
+        🌅 <strong>Daytime</strong> – bright blue sky, strong directional shadows, warm light, sun sphere high.<br>
+        <span style="font-size:0.8rem;">(screenshot placeholder: replace with actual rendered images)</span>
+    </div>
+    <div class="img-placeholder">
+        🌇 <strong>Sunset / Sunrise</strong> – orange/pink horizon, long soft shadows, moon faintly appearing opposite.<br>
+        <span style="font-size:0.8rem;">(screenshot placeholder)</span>
+    </div>
+    <div class="img-placeholder">
+        🌙 <strong>Nighttime</strong> – dark zenith, black horizon, cool moon sphere, subtle blue rim lighting, faint shadows.<br>
+        <span style="font-size:0.8rem;">(screenshot placeholder)</span>
+    </div>
+
+    <p><strong>Paused mode</strong> – Press <kbd>Space</kbd> to freeze the cycle; rotate camera to inspect any moment. <strong>Performance</strong> remains >90 FPS with smooth transitions and no stuttering.</p>
+
+    <h3>Known issues / Limitations</h3>
+    <ul>
+        <li><strong>Shadows at night are very faint</strong> – Low ambient + high shadow attenuation makes them nearly invisible on dark surfaces. (Future fix: exposure compensation or stronger moonlight.)</li>
+        <li><strong>Sun & moon spheres disappear abruptly</strong> – Instant radius change causes popping instead of a smooth fade below the horizon. They also vanish in mid‑air because they are rendered at a fixed 20‑unit distance.</li>
+        <li><strong>No perspective horizon sink</strong> – Spheres do not shrink as they approach the horizon; they appear as large glowing balls moving at constant angular speed. Placing them at 1000+ units would fix this.</li>
+    </ul>
+
+    <!-- ========== FUTURE WORK ========== -->
+    <h2>Future Work</h2>
+    <ul>
+        <li><strong>Spectral ray tracing</strong> – Simulate true atmospheric scattering (Rayleigh/Mie) for physically accurate sky and caustics.</li>
+        <li><strong>Realistic sun/moon horizon behavior</strong> – Smooth fade over elevation range (-0.1 to 0.1) and distance scaling.</li>
+        <li><strong>Dynamic exposure</strong> – Auto‑adjust brightness to make night shadows visible while keeping moonlight realistic.</li>
+        <li><strong>Moon phases</strong> – Independent orbit and illumination fraction.</li>
+        <li><strong>Stars, UI slider, tone mapping, clouds, volumetric atmosphere</strong> – Complete cinematic experience.</li>
+        <li><strong>Comparative analysis</strong> – Benchmark against Unity/Unreal Engine for performance & realism trade‑offs.</li>
+    </ul>
+
+    <div class="highlight">
+        <strong>Conclusion</strong> – This project successfully demonstrates a believable, real‑time day‑night cycle in a fully custom ray tracer, with interactive camera and pause. The architecture is lightweight enough to run >90 FPS on an RTX 4060 while matching expected lighting behaviour from morning to night.
+    </div>
+
+    <footer>
+        Built using Taichi & CUDA | Real‑time ray tracer | Day‑Night simulation | 2026<br>
+        <a href="#" style="color: #1f4e6e;" id="repoLink">View source on GitHub</a> &nbsp;|&nbsp;
+        <span style="cursor:pointer;" id="demoPlaceholder">Demo (WebGPU – work in progress)</span>
+    </footer>
+</div>
+
+<script>
+    // Placeholder for future interactive demo link
+    const demoBtn = document.getElementById('demoLink');
+    if (demoBtn) {
+        demoBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert("Interactive WebGPU demo will be available soon. For now, enjoy the report & screenshots.\n\nYou can run the Taichi raytracer locally from the GitHub repo.");
+        });
+    }
+    const repoLink = document.getElementById('repoLink');
+    if (repoLink) {
+        repoLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert("GitHub repository link would be inserted here. Replace with your actual repo URL.");
+        });
+    }
+    const demoPlaceholder = document.getElementById('demoPlaceholder');
+    if (demoPlaceholder) {
+        demoPlaceholder.addEventListener('click', () => {
+            alert("WebGPU version + live demo under construction.\nThe Taichi Python code runs natively on NVIDIA GPUs (CUDA).");
+        });
+    }
+</script>
+</body>
+</html>
