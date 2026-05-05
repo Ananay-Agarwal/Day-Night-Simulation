@@ -192,6 +192,16 @@
             font-style: italic;
             border: 1px dashed #b9cadb;
         }
+	.screenshot {
+   	     margin: 1.5rem 0;
+             text-align: center;
+	}
+	figcaption {
+    	    font-size: 0.85rem;
+            color: #4a627a;
+            margin-top: 0.5rem;
+            font-style: italic;
+	}
     </style>
 </head>
 <body>
@@ -259,17 +269,17 @@
     <!-- ========== RESULTS ========== -->
     <h2>Results</h2>
 
-    <div class="img-placeholder">
-        🌅 <strong>Daytime</strong> - bright blue sky, strong directional shadows, warm light, sun sphere high.<br>
-        <span style="font-size:0.8rem;">(screenshot placeholder: replace with actual rendered images)</span>
+    <div class="screenshot">
+        <img src="images/Daytime.png" alt="Daytime: bright blue sky and strong shadows">
+                     <figcaption>Daytime: bright blue sky, high sun, strong directional shadows.</figcaption>
     </div>
-    <div class="img-placeholder">
-        🌇 <strong>Sunset / Sunrise</strong> - orange/pink horizon, long soft shadows, moon faintly appearing opposite.<br>
-        <span style="font-size:0.8rem;">(screenshot placeholder)</span>
+    <div class="screenshot">
+        <img src="images/Evening.png" alt="Sunset orange sky">
+                     <figcaption>Sunset – orange/pink horizon</figcaption>
     </div>
-    <div class="img-placeholder">
-        🌙 <strong>Nighttime</strong> - dark zenith, black horizon, cool moon sphere, subtle blue rim lighting, faint shadows.<br>
-        <span style="font-size:0.8rem;">(screenshot placeholder)</span>
+    <div class="screenshot">
+        <img src="images/Night.png" alt="Night with moon">
+                     <figcaption>Night – pale moon and dark sky</figcaption>
     </div>
 
     <p><strong>Paused mode</strong> - Press <kbd>Space</kbd> to freeze the cycle; rotate camera to inspect any moment. <strong>Performance</strong> remains >90 FPS with smooth transitions and no stuttering.</p>
