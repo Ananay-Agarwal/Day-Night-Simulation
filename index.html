@@ -197,13 +197,7 @@
 <body>
 <div class="container">
     <h1>Day‑Night Cycle<br>Lighting Simulation</h1>
-    <div class="subhead">Real‑time global illumination in a custom Taichi ray tracer | >90 FPS (RTX 4060)</div>
-
-    <!-- Interactive demo placeholder / link -->
-    <div style="text-align: center; margin: 1rem 0 2rem 0;">
-        <a href="#" class="demo-btn" id="demoLink">🎮 Launch Interactive Demo (WebGPU build)</a>
-        <p style="font-size: 0.85rem; margin-top: 8px;">⚠️ Full demo requires WebGPU – <em>coming soon / live version below</em></p>
-    </div>
+    <div class="subhead">Real‑time global illumination in a custom Taichi ray tracer</div>
 
     <!-- ========== INTRODUCTION ========== -->
     <h2>Introduction</h2>
@@ -223,10 +217,10 @@
 
     <h3>Core decisions</h3>
     <ul>
-        <li><strong>No spectral ray tracing</strong> – Instead of expensive wavelength‑dependent rendering, a physically plausible color mixing approach based on sun elevation keeps the ray tracer real‑time (≥90 fps on RTX 4060).</li>
-        <li><strong>Dynamic light source</strong> – The main directional light (sun/moon) moves on an elliptical orbit around the scene center. Its position determines the <em>elevation angle</em>, which controls light color (warm/cool), intensity, and sky gradient.</li>
-        <li><strong>Separate visual sun/moon spheres</strong> – Two spheres with an <code>EMISSIVE</code> material are placed far away (20 units) in the light direction and opposite. Radii set to zero when not visible.</li>
-        <li><strong>Pause mechanism</strong> – Spacebar toggle freezes the time variable <code>t</code> (sun angle, light color, sky) while camera movement continues, allowing detailed inspection.</li>
+        <li><strong>No spectral ray tracing</strong> - Instead of expensive wavelength‑dependent rendering, a physically plausible color mixing approach based on sun elevation keeps the ray tracer real‑time (≥90 fps on RTX 4060).</li>
+        <li><strong>Dynamic light source</strong> - The main directional light (sun/moon) moves on an elliptical orbit around the scene center. Its position determines the <em>elevation angle</em>, which controls light color (warm/cool), intensity, and sky gradient.</li>
+        <li><strong>Separate visual sun/moon spheres</strong> - Two spheres with an <code>EMISSIVE</code> material are placed far away (20 units) in the light direction and opposite. Radii set to zero when not visible.</li>
+        <li><strong>Pause mechanism</strong> - Spacebar toggle freezes the time variable <code>t</code> (sun angle, light color, sky) while camera movement continues, allowing detailed inspection.</li>
     </ul>
 
     <div class="highlight">
@@ -248,87 +242,72 @@
         <div class="card"><strong>Recursive tracing</strong><br>• Max depth 15<br>• Diffuse + direct lighting + random bounce<br>• Mirror/dielectric Fresnel & throughput</div>
     </div>
 
-    <h3>2. Time‑of‑day system (scene_2.py)</h3>
+    <h3>2. Time‑of‑day system</h3>
     <ul>
-        <li><strong>Sun/Moon orbit</strong> – <code>t</code> increments by 0.005 per frame → full cycle ≈21 seconds. Sun position follows an ellipse: <code>light_x = cos(angle)*radius</code>, <code>light_y = sin(angle)*y_amp</code>.</li>
-        <li><strong>Elevation & day factor</strong> – <code>elevation = sun_dir.y</code>, <code>day_factor = smoothstep(-0.15, 0.25, elevation)</code> (0 = night, 1 = full day).</li>
-        <li><strong>Light color mixing</strong> – Sun: <code>(1.0,0.95,0.85)×1.2</code>; Moon: <code>(0.65,0.75,1.0)×0.8</code>; Sunset: <code>(1.0,0.5,0.2)×5.0</code>. Blended with elevation‑based sunset tint.</li>
-        <li><strong>Ambient</strong> – Day <code>(0.15,0.15,0.20)</code>, night <code>(0.02,0.03,0.05)</code>, mixed by <code>day_factor</code>.</li>
-        <li><strong>Dynamic sky gradient</strong> – In the miss shader: top/bottom colors interpolate between night & day variants; orange tint added near sunrise/sunset.</li>
-        <li><strong>Sun/Moon spheres (visual only)</strong> – Distance 20 units; radius 0.8 (sun when visible) / 0.7 (moon). Emissive color added directly.</li>
-        <li><strong>Pause</strong> – <code>window.get_key(ti.ui.SPACE)</code> toggles time freezing, camera remains active.</li>
+        <li><strong>Sun/Moon orbit</strong> - <code>t</code> increments by 0.005 per frame → full cycle ≈21 seconds. Sun position follows an ellipse: <code>light_x = cos(angle)*radius</code>, <code>light_y = sin(angle)*y_amp</code>.</li>
+        <li><strong>Elevation & day factor</strong> - <code>elevation = sun_dir.y</code>, <code>day_factor = smoothstep(-0.15, 0.25, elevation)</code> (0 = night, 1 = full day).</li>
+        <li><strong>Light color mixing</strong> - Sun: <code>(1.0,0.95,0.85)×1.2</code>; Moon: <code>(0.65,0.75,1.0)×0.8</code>; Sunset: <code>(1.0,0.5,0.2)×5.0</code>. Blended with elevation‑based sunset tint.</li>
+        <li><strong>Ambient</strong> - Day <code>(0.15,0.15,0.20)</code>, night <code>(0.02,0.03,0.05)</code>, mixed by <code>day_factor</code>.</li>
+        <li><strong>Dynamic sky gradient</strong> - In the miss shader: top/bottom colors interpolate between night & day variants; orange tint added near sunrise/sunset.</li>
+        <li><strong>Sun/Moon spheres (visual only)</strong> - Distance 20 units; radius 0.8 (sun when visible) / 0.7 (moon). Emissive color added directly.</li>
+        <li><strong>Pause</strong> - <code>window.get_key(ti.ui.SPACE)</code> toggles time freezing, camera remains active.</li>
     </ul>
 
     <h3>3. Performance</h3>
     <p><strong>>90 FPS on RTX 4060</strong> at 800×600 resolution, 15 bounces. Taichi’s CUDA backend compiles kernels to efficient GPU code. No visible lag during day‑night transitions.</p>
 
     <!-- ========== RESULTS ========== -->
-    <h2>📸 Results</h2>
+    <h2>Results</h2>
 
     <div class="img-placeholder">
-        🌅 <strong>Daytime</strong> – bright blue sky, strong directional shadows, warm light, sun sphere high.<br>
+        🌅 <strong>Daytime</strong> - bright blue sky, strong directional shadows, warm light, sun sphere high.<br>
         <span style="font-size:0.8rem;">(screenshot placeholder: replace with actual rendered images)</span>
     </div>
     <div class="img-placeholder">
-        🌇 <strong>Sunset / Sunrise</strong> – orange/pink horizon, long soft shadows, moon faintly appearing opposite.<br>
+        🌇 <strong>Sunset / Sunrise</strong> - orange/pink horizon, long soft shadows, moon faintly appearing opposite.<br>
         <span style="font-size:0.8rem;">(screenshot placeholder)</span>
     </div>
     <div class="img-placeholder">
-        🌙 <strong>Nighttime</strong> – dark zenith, black horizon, cool moon sphere, subtle blue rim lighting, faint shadows.<br>
+        🌙 <strong>Nighttime</strong> - dark zenith, black horizon, cool moon sphere, subtle blue rim lighting, faint shadows.<br>
         <span style="font-size:0.8rem;">(screenshot placeholder)</span>
     </div>
 
-    <p><strong>Paused mode</strong> – Press <kbd>Space</kbd> to freeze the cycle; rotate camera to inspect any moment. <strong>Performance</strong> remains >90 FPS with smooth transitions and no stuttering.</p>
+    <p><strong>Paused mode</strong> - Press <kbd>Space</kbd> to freeze the cycle; rotate camera to inspect any moment. <strong>Performance</strong> remains >90 FPS with smooth transitions and no stuttering.</p>
 
     <h3>Known issues / Limitations</h3>
     <ul>
-        <li><strong>Shadows at night are very faint</strong> – Low ambient + high shadow attenuation makes them nearly invisible on dark surfaces. (Future fix: exposure compensation or stronger moonlight.)</li>
-        <li><strong>Sun & moon spheres disappear abruptly</strong> – Instant radius change causes popping instead of a smooth fade below the horizon. They also vanish in mid‑air because they are rendered at a fixed 20‑unit distance.</li>
-        <li><strong>No perspective horizon sink</strong> – Spheres do not shrink as they approach the horizon; they appear as large glowing balls moving at constant angular speed. Placing them at 1000+ units would fix this.</li>
+        <li><strong>Shadows at night are very faint</strong> - Low ambient + high shadow attenuation makes them nearly invisible on dark surfaces. (Future fix: exposure compensation or stronger moonlight.)</li>
+        <li><strong>Sun & moon spheres disappear abruptly</strong> - Instant radius change causes popping instead of a smooth fade below the horizon. They also vanish in mid‑air because they are rendered at a fixed 20‑unit distance.</li>
+        <li><strong>No perspective horizon sink</strong> - Spheres do not shrink as they approach the horizon; they appear as large glowing balls moving at constant angular speed. Placing them at 1000+ units would fix this.</li>
     </ul>
 
     <!-- ========== FUTURE WORK ========== -->
     <h2>Future Work</h2>
     <ul>
-        <li><strong>Spectral ray tracing</strong> – Simulate true atmospheric scattering (Rayleigh/Mie) for physically accurate sky and caustics.</li>
-        <li><strong>Realistic sun/moon horizon behavior</strong> – Smooth fade over elevation range (-0.1 to 0.1) and distance scaling.</li>
-        <li><strong>Dynamic exposure</strong> – Auto‑adjust brightness to make night shadows visible while keeping moonlight realistic.</li>
-        <li><strong>Moon phases</strong> – Independent orbit and illumination fraction.</li>
-        <li><strong>Stars, UI slider, tone mapping, clouds, volumetric atmosphere</strong> – Complete cinematic experience.</li>
-        <li><strong>Comparative analysis</strong> – Benchmark against Unity/Unreal Engine for performance & realism trade‑offs.</li>
+        <li><strong>Spectral ray tracing</strong> - Simulate true atmospheric scattering (Rayleigh/Mie) for physically accurate sky and caustics.</li>
+        <li><strong>Realistic sun/moon horizon behavior</strong> - Smooth fade over elevation range (-0.1 to 0.1) and distance scaling.</li>
+        <li><strong>Dynamic exposure</strong> - Auto‑adjust brightness to make night shadows visible while keeping moonlight realistic.</li>
+        <li><strong>Moon phases</strong> - Independent orbit and illumination fraction.</li>
+        <li><strong>Stars, UI slider, tone mapping, clouds, volumetric atmosphere</strong> - Complete cinematic experience.</li>
+        <li><strong>Comparative analysis</strong> - Benchmark against Unity/Unreal Engine for performance & realism trade‑offs.</li>
     </ul>
-
-    <div class="highlight">
-        <strong>Conclusion</strong> – This project successfully demonstrates a believable, real‑time day‑night cycle in a fully custom ray tracer, with interactive camera and pause. The architecture is lightweight enough to run >90 FPS on an RTX 4060 while matching expected lighting behaviour from morning to night.
-    </div>
+    
+    <!-- ========== CONCLUSION ========== -->
+    <h2>Conclusion</h2>
+    <p>This project successfully demonstrates a believable, real‑time day‑night cycle in a fully custom ray tracer, with interactive camera and pause. The architecture is lightweight enough to run >90 FPS on an RTX 4060 while matching expected lighting behaviour from morning to night.</p>
 
     <footer>
         Built using Taichi & CUDA | Real‑time ray tracer | Day‑Night simulation | 2026<br>
-        <a href="#" style="color: #1f4e6e;" id="repoLink">View source on GitHub</a> &nbsp;|&nbsp;
-        <span style="cursor:pointer;" id="demoPlaceholder">Demo (WebGPU – work in progress)</span>
+        <a href="#" style="color: #1f4e6e;" id="repoLink">View source on GitHub</a> &nbsp;
     </footer>
 </div>
 
 <script>
-    // Placeholder for future interactive demo link
-    const demoBtn = document.getElementById('demoLink');
-    if (demoBtn) {
-        demoBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert("Interactive WebGPU demo will be available soon. For now, enjoy the report & screenshots.\n\nYou can run the Taichi raytracer locally from the GitHub repo.");
-        });
-    }
-    const repoLink = document.getElementById('repoLink');
+    const repoLink = "https://github.com/Ananay-Agarwal/Day-Night-Simulation";
     if (repoLink) {
         repoLink.addEventListener('click', (e) => {
             e.preventDefault();
-            alert("GitHub repository link would be inserted here. Replace with your actual repo URL.");
-        });
-    }
-    const demoPlaceholder = document.getElementById('demoPlaceholder');
-    if (demoPlaceholder) {
-        demoPlaceholder.addEventListener('click', () => {
-            alert("WebGPU version + live demo under construction.\nThe Taichi Python code runs natively on NVIDIA GPUs (CUDA).");
+            alert("GitHub repository link missing.");
         });
     }
 </script>
